@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+:root {
+  --background: #faf9f7;
+  --foreground: #1c1917;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-serif-display: var(--font-playfair), Georgia, serif;
+  --font-script: var(--font-greatvibes), cursive;
+  --font-classic: var(--font-cormorant), Georgia, serif;
+  --font-fun: var(--font-fredoka), ui-rounded, sans-serif;
+  --color-brand-50: #fdf2f6;
+  --color-brand-100: #fce7ef;
+  --color-brand-200: #fbcfe0;
+  --color-brand-300: #f9a8c8;
+  --color-brand-400: #f472a5;
+  --color-brand-500: #ec4d89;
+  --color-brand-600: #db2b70;
+  --color-brand-700: #be1b5e;
+  --color-brand-800: #9f1a52;
+  --color-brand-900: #851949;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* Animasi undangan */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(236, 77, 137, 0.45); }
+  70% { box-shadow: 0 0 0 14px rgba(236, 77, 137, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(236, 77, 137, 0); }
+}
+.anim-fade-up { animation: fade-up 0.8s ease both; }
+.anim-fade-in { animation: fade-in 1s ease both; }
+.anim-float { animation: float-y 3.2s ease-in-out infinite; }
+.anim-ring { animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+/* Scroll halus untuk undangan */
+.invitation-scroll { scroll-behavior: smooth; }
+
+/* Lightbox galeri */
+.lightbox-overlay {
+  backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.82);
+}
+
+/* Scrollbar tipis di dashboard */
+.thin-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+.thin-scroll::-webkit-scrollbar-thumb { border-radius: 9999px; background: #d6d3d1; }
+
+/* Ornamen SVG inline (CC0) — ukuran dikendalikan wrapper-nya */
+.clipart { display: inline-block; line-height: 0; }
+.clipart svg { width: 100%; height: 100%; display: block; }

@@ -1,0 +1,110 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String       @id @default(cuid())
+  name         String
+  email        String       @unique
+  phone        String?
+  passwordHash String
+  role         String       @default("USER") // USER | ADMIN | RESELLER
+  createdAt    DateTime     @default(now())
+  invitations  Invitation[]
+  payments     Payment[]
+  media        Media[]
+}
+
+// Berkas unggahan (foto/video/audio) disimpan sebagai BLOB di database
+// dan disajikan publik lewat /api/media/[id].
+model Media {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  filename  String
+  mimeType  String
+  kind      String // IMAGE | VIDEO | AUDIO
+  size      Int
+  data      Bytes
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Invitation {
+  id             String      @id @default(cuid())
+  userId         String
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug           String      @unique
+  category       String // WEDDING | KHITAN | AQIQAH | BIRTHDAY | EVENT | OTHER
+  themeId        String // lihat src/lib/themes.ts
+  themeArt       String? // JSON ThemeArt: override ornamen per undangan
+  themePalette   String? // JSON partial ThemePalette: override warna
+  title          String // label internal
+  waTemplate     String? // template pesan WhatsApp dengan {nama} & {link}
+  status         String      @default("DRAFT") // DRAFT | PENDING | ACTIVE | EXPIRED | CANCELED
+  plan           String      @default("FREE") // FREE | BASIC | PREMIUM
+  activatedUntil DateTime?
+  views          Int         @default(0)
+  data           String // JSON: seluruh konten undangan (lihat src/lib/invitation-data.ts)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  guests         Guest[]
+  wishes         Wish[]
+  payments       Payment[]
+
+  @@index([userId])
+}
+
+model Guest {
+  id           String     @id @default(cuid())
+  invitationId String
+  invitation   Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+  name         String
+  groupName    String? // Keluarga, Teman, Rekan Kerja, dst
+  phone        String? // nomor WhatsApp, format 62xxx
+  qrToken      String     @unique @default(cuid())
+  checkedInAt  DateTime?
+  createdAt    DateTime   @default(now())
+
+  @@index([invitationId])
+}
+
+model Wish {
+  id           String     @id @default(cuid())
+  invitationId String
+  invitation   Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+  guestName    String
+  attendance   String     @default("HADIR") // HADIR | BERHALANGAN | MASIH_RAGU
+  message      String
+  reply        String?
+  repliedAt    DateTime?
+  createdAt    DateTime   @default(now())
+
+  @@index([invitationId])
+}
+
+model Payment {
+  id           String      @id @default(cuid())
+  orderId      String      @unique
+  userId       String
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  invitationId String?
+  invitation   Invitation? @relation(fields: [invitationId], references: [id], onDelete: SetNull)
+  plan         String // BASIC | PREMIUM
+  amount       Int
+  method       String? // BRIVA | QRIS | ALFAMART | SIMULASI | ...
+  status       String      @default("UNPAID") // UNPAID | PAID | EXPIRED | FAILED
+  checkoutUrl  String?
+  payRef       String?
+  meta         String?
+  paidAt       DateTime?
+  createdAt    DateTime    @default(now())
+
+  @@index([userId])
+}
