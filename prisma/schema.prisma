@@ -47,6 +47,7 @@ model Invitation {
   themePalette   String? // JSON partial ThemePalette: override warna
   title          String // label internal
   waTemplate     String? // template pesan WhatsApp dengan {nama} & {link}
+  ogImage        String? // URL gambar OG kustom (/api/media/<id>) untuk pratinjau WhatsApp
   status         String      @default("DRAFT") // DRAFT | PENDING | ACTIVE | EXPIRED | CANCELED
   plan           String      @default("FREE") // FREE | BASIC | PREMIUM
   activatedUntil DateTime?

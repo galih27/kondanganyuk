@@ -32,6 +32,7 @@ export default async function EditUndanganPage({ params }: { params: Promise<{ i
         themeArt: invitation.themeArt,
         themePalette: invitation.themePalette,
         waTemplate: invitation.waTemplate,
+        ogImage: invitation.ogImage,
         title: invitation.title,
         status: invitation.status,
         plan: invitation.plan,

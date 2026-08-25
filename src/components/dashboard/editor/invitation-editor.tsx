@@ -22,6 +22,7 @@ export interface EditorInvitation {
   themeArt: string | null;
   themePalette: string | null;
   waTemplate: string | null;
+  ogImage: string | null;
   title: string;
   status: string;
   plan: string;
@@ -110,6 +111,7 @@ export function InvitationEditor({ initial }: { initial: EditorInvitation }) {
   const [themeId, setThemeId] = useState(initial.themeId);
   const [title, setTitle] = useState(initial.title);
   const [slug, setSlug] = useState(initial.slug);
+  const [ogImage, setOgImage] = useState<string | null>(initial.ogImage);
 
   // ===== Pengaturan tema kustom (ornamen & palet) =====
   const initialArtSlots: Record<"corners" | "backdrop" | "frame", ArtSlot> = (() => {
@@ -210,6 +212,7 @@ export function InvitationEditor({ initial }: { initial: EditorInvitation }) {
           slug,
           themeArt: JSON.stringify(resolveArt()),
           themePalette: palEnabled ? JSON.stringify(palColors) : null,
+          ogImage,
         }),
       });
       const json = await res.json();
@@ -809,6 +812,33 @@ export function InvitationEditor({ initial }: { initial: EditorInvitation }) {
                   </div>
                   {slugStatus && <p className={`mt-1.5 text-xs ${slugStatus.ok ? "text-green-600" : "text-red-500"}`}>{slugStatus.msg}</p>}
                 </Field>
+
+                <div className="rounded-2xl border border-stone-200 p-5">
+                  <p className="text-sm font-semibold text-stone-800">Gambar pratinjau WhatsApp / OG</p>
+                  <p className="mt-1 text-xs text-stone-400">
+                    Gambar yang tampil saat link dibagikan ke WhatsApp/Sosmed. Ideal 1200×630 px (rasio 1,91:1). Kosong = dibuat otomatis dari tema &amp; nama undangan.
+                  </p>
+                  {ogImage ? (
+                    <div className="mt-4 flex items-center gap-4">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={ogImage} alt="Pratinjau gambar OG" className="h-28 w-[10.75rem] rounded-xl border border-stone-200 object-cover" />
+                      <button type="button" onClick={() => setOgImage(null)} className="text-sm font-semibold text-red-500 hover:text-red-600">
+                        Hapus
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="mt-4">
+                      <UploadZone
+                        accept="image/*"
+                        icon="🖼️"
+                        label="Unggah gambar pratinjau"
+                        hint="JPG/PNG/WebP, disarankan ≤ 4 MB."
+                        onUploaded={(urls) => setOgImage(urls[0] ?? null)}
+                      />
+                    </div>
+                  )}
+                  <p className="mt-3 text-xs text-stone-400">Jangan lupa klik Simpan setelah mengunggah/menghapus.</p>
+                </div>
               </>
             )}
 

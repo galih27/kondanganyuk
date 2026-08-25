@@ -35,6 +35,12 @@ export async function PATCH(req: Request, { params }: Params) {
     else if (typeof body.waTemplate === "string") update.waTemplate = body.waTemplate.slice(0, 2000);
   }
 
+  // Gambar OG kustom: hanya URL media internal, null/"" untuk reset otomatis
+  if (body.ogImage !== undefined) {
+    if (body.ogImage === null || body.ogImage === "") update.ogImage = null;
+    else if (typeof body.ogImage === "string" && /^\/api\/media\/[a-z0-9]+$/i.test(body.ogImage)) update.ogImage = body.ogImage;
+  }
+
   // Pengaturan tema kustom: ornamen & palet (JSON string, null = reset ke tema)
   try {
     if (body.themeArt !== undefined) {

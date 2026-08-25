@@ -19,8 +19,27 @@ export default async function OgImage({ params }: { params: Promise<{ slug: stri
   const { slug } = await params;
   const invitation = await db.invitation.findUnique({
     where: { slug },
-    select: { category: true, themeId: true, data: true, title: true },
+    select: { category: true, themeId: true, data: true, title: true, ogImage: true },
   });
+
+  // Gambar kustom unggahan pengguna menang atas kartu otomatis
+  if (invitation?.ogImage) {
+    const mediaId = invitation.ogImage.split("/").pop() ?? "";
+    if (/^[a-z0-9]{20,32}$/i.test(mediaId)) {
+      const media = await db.media.findUnique({
+        where: { id: mediaId },
+        select: { mimeType: true, data: true },
+      });
+      if (media) {
+        return new Response(new Uint8Array(media.data), {
+          headers: {
+            "Content-Type": media.mimeType,
+            "Cache-Control": "public, max-age=600",
+          },
+        });
+      }
+    }
+  }
 
   const theme = getTheme(invitation?.themeId ?? "");
   const p = theme.palette;
