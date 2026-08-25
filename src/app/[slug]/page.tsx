@@ -35,6 +35,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     openGraph: {
       title: `Undangan ${title}`,
       description: "Buka undangan ini untuk melihat detail acara.",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `Undangan ${title}`,
+      description: "Buka undangan ini untuk melihat detail acara.",
     },
   };
 }

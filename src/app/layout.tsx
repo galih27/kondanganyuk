@@ -31,6 +31,7 @@ const fredoka = Fredoka({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://kondanganyuk.vercel.app"),
   title: {
     default: "Kondanganyuk — Buat Undangan Digital Online",
     template: "%s | Kondanganyuk",
