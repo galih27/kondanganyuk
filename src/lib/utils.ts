@@ -44,3 +44,34 @@ export function generateOrderId() {
   const r = Math.random().toString(36).slice(2, 6).toUpperCase();
   return `KY-${t}${r}`;
 }
+
+/**
+ * Normalisasi input peta manual menjadi URL embed Google Maps yang aman.
+ * Menerima:
+ *  - kode <iframe> lengkap dari "Sematkan peta" (src-nya diambil)
+ *  - URL embed Google Maps langsung
+ *  - koordinat "-6.200, 106.816"
+ * Mengembalikan string kosong bila tidak dikenali.
+ */
+export function normalizeMapsEmbed(raw: unknown): string {
+  if (typeof raw !== "string") return "";
+  const s = raw.trim();
+  if (!s) return "";
+
+  // Kode iframe ? ambil src
+  const m = s.match(/<iframe[^>]*\ssrc=["']([^"']+)["']/i);
+  let url = (m ? m[1] : s).trim();
+
+  // Koordinat lat,lng
+  const coord = url.match(/^(-?\d{1,2}(?:\.\d+)?)[,\s]+(-?\d{1,3}(?:\.\d+)?)$/);
+  if (coord) return `https://www.google.com/maps?q=${coord[1]},${coord[2]}&output=embed`;
+
+  // Hanya izinkan host Google Maps (cegah penyisipan iframe arbitrer)
+  if (!/^https:\/\/(maps\.google\.[a-z.]+|www\.google\.[a-z.]+)\/maps/i.test(url)) return "";
+
+  // Pastikan mode embed agar bisa dirender di dalam iframe
+  if (!/[?&]output=embed/.test(url)) {
+    url += (url.includes("?") ? "&" : "?") + "output=embed";
+  }
+  return url;
+}

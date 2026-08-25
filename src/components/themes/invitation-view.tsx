@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { InvitationData } from "@/lib/invitation-data";
 import { getTheme, type ThemeArt, type ThemePalette } from "@/lib/themes";
-import { formatDateID } from "@/lib/utils";
+import { formatDateID, normalizeMapsEmbed } from "@/lib/utils";
 import { Countdown } from "./countdown";
 import { RsvpSection } from "./rsvp-section";
 import { GallerySection, VideoSection } from "./gallery-section";
@@ -373,9 +373,13 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
                     {(ev.address || ev.place) && (
                       <iframe
                         title={`Peta ${ev.name}`}
-                        src={`https://www.google.com/maps?q=${encodeURIComponent(ev.mapsUrl?.startsWith("http") ? (ev.place || ev.address) : [ev.place, ev.address].filter(Boolean).join(" "))}&output=embed`}
+                        src={
+                          normalizeMapsEmbed(ev.mapsEmbed) ||
+                          `https://www.google.com/maps?q=${encodeURIComponent([ev.place, ev.address].filter(Boolean).join(" "))}&output=embed`
+                        }
                         className="mt-5 h-52 w-full rounded-2xl border-0"
                         loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
                       />
                     )}
                   </div>

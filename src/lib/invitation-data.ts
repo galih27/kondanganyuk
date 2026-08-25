@@ -9,6 +9,7 @@ export type EventDetail = {
   place: string;
   address: string;
   mapsUrl: string;
+  mapsEmbed: string; // peta manual: kode <iframe> / URL embed / koordinat
 };
 
 export type StoryItem = { date: string; title: string; text: string };
@@ -79,6 +80,7 @@ export function emptyInvitationData(): InvitationData {
         place: "",
         address: "",
         mapsUrl: "",
+        mapsEmbed: "",
       },
       {
         name: "Resepsi",
@@ -88,6 +90,7 @@ export function emptyInvitationData(): InvitationData {
         place: "",
         address: "",
         mapsUrl: "",
+        mapsEmbed: "",
       },
     ],
     story: [],
@@ -109,6 +112,13 @@ export function normalizeInvitationData(raw: unknown): InvitationData {
   const merged = { ...base } as Record<string, unknown>;
   for (const key of Object.keys(base)) {
     if (obj[key] !== undefined && obj[key] !== null) merged[key] = obj[key];
+  }
+  // Data lama: isi mapsEmbed kosong pada setiap acara
+  if (Array.isArray(merged.events)) {
+    merged.events = (merged.events as Array<Record<string, unknown>>).map((e) => ({
+      mapsEmbed: "",
+      ...e,
+    }));
   }
   return merged as unknown as InvitationData;
 }

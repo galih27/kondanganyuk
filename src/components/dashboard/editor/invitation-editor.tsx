@@ -433,11 +433,19 @@ export function InvitationEditor({ initial }: { initial: EditorInvitation }) {
                         <textarea rows={2} value={ev.address} onChange={(e) => updateEvent(i, { address: e.target.value })} className={inputCls} placeholder="Jl. Contoh No. 123, Kota" />
                       </Field>
                     </div>
+                    <div className="mt-4">
+                      <Field
+                        label="Peta manual (opsional)"
+                        hint="Tempel kode sematkan dari Google Maps → Bagikan → Sematkan peta (boleh kode <iframe> utuh), URL embed, atau koordinat cth: -6.200, 106.816. Kosongkan untuk memakai pencarian otomatis."
+                      >
+                        <textarea rows={3} value={ev.mapsEmbed} onChange={(e) => updateEvent(i, { mapsEmbed: e.target.value })} className={`${inputCls} font-mono text-xs`} placeholder={'<iframe src="https://www.google.com/maps/embed?pb=..."></iframe>'} />
+                      </Field>
+                    </div>
                   </div>
                 ))}
                 <button
                   onClick={() =>
-                    set("events", [...form.events, { name: "Acara Baru", date: "", startTime: "09:00", endTime: "11:00", place: "", address: "", mapsUrl: "" }])
+                    set("events", [...form.events, { name: "Acara Baru", date: "", startTime: "09:00", endTime: "11:00", place: "", address: "", mapsUrl: "", mapsEmbed: "" }])
                   }
                   className="w-full rounded-2xl border-2 border-dashed border-stone-300 py-3.5 text-sm font-medium text-stone-500 transition hover:border-brand-400 hover:text-brand-600"
                 >
