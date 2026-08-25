@@ -10,6 +10,7 @@ import { RsvpSection } from "./rsvp-section";
 import { GallerySection, VideoSection } from "./gallery-section";
 import { OrnamentTop, OrnamentBottom, CoverFrame, ConfettiField, IslamicBand, GeometricCorner } from "./ornaments";
 import { ClipArt } from "./ornaments-clipart";
+import { AutoScrollToggle } from "./auto-scroll-toggle";
 import { BankAtmCard } from "./bank-card";
 
 export interface WishPublic {
@@ -130,6 +131,8 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
       {data.musicUrl && unlocked.music && opened && (
         <MusicToggle audioRef={audioRef} accent={p.accent} />
       )}
+      {/* Gulir otomatis */}
+      {opened && <AutoScrollToggle accent={p.accent} dark={t.dark} />}
 
       {/* ===== COVER ===== */}
       {!opened && (
