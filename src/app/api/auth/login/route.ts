@@ -15,7 +15,8 @@ export async function POST(req: Request) {
 
     await createSession(user.id);
     return NextResponse.json({ ok: true });
-  } catch {
+  } catch (err) {
+    console.error("[login] gagal:", err);
     return NextResponse.json({ error: "Terjadi kesalahan server." }, { status: 500 });
   }
 }

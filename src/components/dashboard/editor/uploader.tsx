@@ -38,7 +38,11 @@ export function useUploader() {
             setError(json.error || "Gagal mengunggah.");
           }
         } catch {
-          setError("Respons server tidak valid.");
+          if (xhr.status === 413) {
+            setError("Ukuran berkas terlalu besar untuk server hosting (maks sekitar 4 MB per berkas).");
+          } else {
+            setError(`Respons server tidak valid (kode ${xhr.status || "—" }).`);
+          }
         }
         resolve();
       };
