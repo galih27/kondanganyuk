@@ -5,6 +5,7 @@ export const EDITOR_TABS = [
   { id: "galeri", label: "Galeri & Musik", icon: "🖼️" },
   { id: "amplop", label: "Amplop Digital", icon: "🎁" },
   { id: "tema", label: "Tema & Link", icon: "🎨" },
+  { id: "huruf", label: "Font & Warna", icon: "🅰️" },
   { id: "tamu", label: "Daftar Tamu", icon: "👥" },
 ] as const;
 

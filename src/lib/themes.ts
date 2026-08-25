@@ -20,7 +20,39 @@ export interface ThemeArt {
   cloudsOpacity?: number;
   /** Latar dekoratif lembut di cover */
   backdrop?: string;
+  /** Pengaturan font/ukuran/warna per seksi undangan */
+  sectionStyles?: Partial<Record<SectionKey, SectionStyle>>;
 }
+
+export const SECTION_KEYS = ["pembuka", "mempelai", "acara", "cerita", "galeri", "kado", "rsvp", "penutup"] as const;
+export type SectionKey = (typeof SECTION_KEYS)[number];
+
+/** Gaya kustom satu seksi: gaya font judul, skala ukuran (0.85-1.25), warna teks utama. */
+export interface SectionStyle {
+  headingFont?: string;
+  scale?: number;
+  textColor?: string;
+}
+
+export const SECTION_LABELS: Record<SectionKey, string> = {
+  pembuka: "Pembuka",
+  mempelai: "Mempelai",
+  acara: "Acara & Hitung Mundur",
+  cerita: "Cerita Kami",
+  galeri: "Galeri",
+  kado: "Amplop Digital",
+  rsvp: "RSVP & Ucapan",
+  penutup: "Penutup",
+};
+
+export const HEADING_FONT_OPTIONS: { value: string; label: string }[] = [
+  { value: "", label: "Ikut tema" },
+  { value: "script", label: "Script (Great Vibes)" },
+  { value: "classic", label: "Klasik (Cormorant)" },
+  { value: "serif-elegant", label: "Serif Elegan (Playfair)" },
+  { value: "playful", label: "Playful (Fredoka)" },
+  { value: "sans", label: "Sans Bersih" },
+];
 
 export interface ThemeDef {
   id: string;

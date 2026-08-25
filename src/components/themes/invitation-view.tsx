@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { useEffect, useRef, useState } from "react";
 import type { InvitationData } from "@/lib/invitation-data";
-import { getTheme, type ThemeArt, type ThemePalette } from "@/lib/themes";
+import { getTheme, SECTION_KEYS, type SectionKey, type SectionStyle, type ThemeArt, type ThemePalette } from "@/lib/themes";
 import { formatDateID, normalizeMapsEmbed } from "@/lib/utils";
 import { Countdown } from "./countdown";
 import { RsvpSection } from "./rsvp-section";
@@ -82,6 +82,23 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
   const cloudsStyle = cloudsOp !== null ? { opacity: cloudsOp } : undefined;
   const hFont = headingFontClass(t.fontHeading);
   const bodyFont = t.fontBody === "serif" ? "font-classic" : "";
+
+  // ===== Pengaturan per-seksi (font judul, skala ukuran, warna teks) =====
+  const secCfg = (k: SectionKey): SectionStyle => t.art?.sectionStyles?.[k] ?? {};
+  const dim = (c: string) => (/^#[0-9a-fA-F]{6}$/.test(c) ? `${c}cc` : c);
+  const spal = (k: SectionKey): ThemePalette => {
+    const c = secCfg(k).textColor;
+    return c ? { ...p, text: c, textMuted: dim(c) } : p;
+  };
+  const hf = (k: SectionKey) => {
+    const f = secCfg(k).headingFont;
+    return f ? headingFontClass(f) : hFont;
+  };
+  const zs = (k: SectionKey): React.CSSProperties | undefined => {
+    const s = secCfg(k).scale;
+    return s && s !== 1 ? { zoom: s } : undefined;
+  };
+  const stheme = (k: SectionKey): typeof t => ({ ...t, palette: spal(k) });
 
   const [opened, setOpened] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -175,11 +192,7 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
               Undangan {isWedding ? "Pernikahan" : { KHITAN: "Khitanan", AQIQAH: "Aqiqah", BIRTHDAY: "Ulang Tahun", EVENT: "Syukuran" }[category] ?? ""}
             </p>
 
-            {guestName && (
-              <p className={`mt-6 text-sm ${bodyFont}`} style={{ color: p.textMuted }}>
-                Kepada Bapak/Ibu/Saudara/i
-              </p>
-            )}
+            
 
             {coupleTitle ? (
               <>
@@ -195,6 +208,12 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
               <h1 className={`${hFont} mt-5 text-5xl leading-tight md:text-6xl`} style={{ color: p.text }}>
                 {mainPerson || data.events[0]?.name || "Undangan"}
               </h1>
+            )}
+
+            {guestName && (
+              <p className={`mt-6 text-sm ${bodyFont}`} style={{ color: p.textMuted }}>
+                Kepada Bapak/Ibu/Saudara/i
+              </p>
             )}
 
             {guestName && (
@@ -228,7 +247,7 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
       {opened && (
         <div>
           {/* Pembuka */}
-          <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 py-20 text-center" style={{ background: `linear-gradient(160deg, ${t.gradient[0]}, ${t.gradient[1]})` }}>
+          <section data-sec="pembuka" className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 py-20 text-center" style={{ ...zs("pembuka"), background: `linear-gradient(160deg, ${t.gradient[0]}, ${t.gradient[1]})` }}>
             {t.ornament === "floral" && <OrnamentTop accent={p.accent} />}
             {t.ornament === "confetti" && <ConfettiField colors={[p.accent, p.accent2, "#ffd166", "#06d6a0"]} />}
             {t.ornament === "islamic" && <IslamicBand accent={p.accent} position="top" />}
@@ -238,7 +257,7 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
             <div className="relative z-10 max-w-lg">
               {data.quoteText ? (
                 <blockquote>
-                  <p className={`${bodyFont} italic leading-relaxed`} style={{ color: p.text }}>
+                  <p className={`${bodyFont} italic leading-relaxed`} style={{ color: spal("pembuka").text }}>
                     &ldquo;{data.quoteText}&rdquo;
                   </p>
                   {data.quoteSource && (
@@ -248,16 +267,16 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
                   )}
                 </blockquote>
               ) : (
-                <p className={`${bodyFont} leading-relaxed`} style={{ color: p.textMuted }}>
+                <p className={`${bodyFont} leading-relaxed`} style={{ color: spal("pembuka").textMuted }}>
                   Dengan memohon rahmat dan ridha Tuhan Yang Maha Esa, kami bermaksud menyelenggarakan acara ini dan mengundang Anda untuk hadir memberikan doa restu.
                 </p>
               )}
 
               {coupleTitle ? null : (
                 <>
-                  <h2 className={`${hFont} mt-12 text-5xl`} style={{ color: p.text }}>{mainPerson}</h2>
+                  <h2 className={`${hf("pembuka")} mt-12 text-5xl`} style={{ color: spal("pembuka").text }}>{mainPerson}</h2>
                   {data.personDetail && (
-                    <p className={`${bodyFont} mt-3 text-sm leading-relaxed`} style={{ color: p.textMuted }}>{data.personDetail}</p>
+                    <p className={`${bodyFont} mt-3 text-sm leading-relaxed`} style={{ color: spal("pembuka").textMuted }}>{data.personDetail}</p>
                   )}
                 </>
               )}
@@ -268,26 +287,26 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
 
           {/* ===== SAVE THE DATE ===== */}
           {firstEventDate && (
-            <section className="px-6 py-20 text-center" style={{ background: p.surface }}>
+            <section data-sec="acara" className="px-6 py-20 text-center" style={{ ...zs("acara"), background: p.surface }}>
               <div className="mx-auto max-w-lg">
-                <SectionHeading title="Save The Date" theme={t} hFont={hFont} />
-                <p className={`${bodyFont} mt-8 text-sm uppercase tracking-[0.35em]`} style={{ color: p.textMuted }}>
+                <SectionHeading title="Save The Date" theme={stheme("acara")} hFont={hf("acara")} />
+                <p className={`${bodyFont} mt-8 text-sm uppercase tracking-[0.35em]`} style={{ color: spal("acara").textMuted }}>
                   {new Date(`${firstEventDate}T00:00:00`).toLocaleDateString("id-ID", { weekday: "long" })}
                 </p>
-                <p className={`${hFont} mt-1 text-7xl leading-none`} style={{ color: p.text }}>
+                <p className={`${hf("acara")} mt-1 text-7xl leading-none`} style={{ color: spal("acara").text }}>
                   {new Date(`${firstEventDate}T00:00:00`).getDate()}
                 </p>
-                <p className={`${hFont} mt-2 text-2xl`} style={{ color: p.accent }}>
+                <p className={`${hf("acara")} mt-2 text-2xl`} style={{ color: p.accent }}>
                   {new Date(`${firstEventDate}T00:00:00`).toLocaleDateString("id-ID", { month: "long", year: "numeric" })}
                 </p>
-                <Countdown targetDate={firstEventDate} palette={t.palette} dark={t.dark} />
+                <Countdown targetDate={firstEventDate} palette={stheme("acara").palette} dark={t.dark} />
               </div>
             </section>
           )}
 
           {/* ===== MEMPELAI ===== */}
           {coupleTitle && (
-            <section className="relative overflow-hidden px-6 py-20">
+            <section data-sec="mempelai" className="relative overflow-hidden px-6 py-20" style={zs("mempelai")}>
               {decorImg("gunungan", "pointer-events-none absolute top-1/2 left-1/2 z-0 w-72 -translate-x-1/2 -translate-y-1/2 opacity-10 sm:w-96")}
               {t.art?.frame && (
                 <ClipArt
@@ -297,13 +316,13 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
                 />
               )}
               <div className="relative z-10 mx-auto max-w-2xl">
-                <SectionHeading title="Mempelai" theme={t} hFont={hFont} />
+                <SectionHeading title="Mempelai" theme={stheme("mempelai")} hFont={hf("mempelai")} />
                 <div className="mt-10 grid items-start gap-10 sm:grid-cols-[1fr_auto_1fr] sm:gap-6">
-                  <CoupleCard palette={t.palette} hFont={hFont} bodyFont={bodyFont} photo={data.groomPhoto} nick={coupleTitle.a} full={data.groomFull} relation="Putra dari" parents={data.groomParents} altSide={false} />
-                  <p className={`${hFont} self-center text-center text-4xl`} style={{ color: p.accent }}>&amp;</p>
-                  <CoupleCard palette={t.palette} hFont={hFont} bodyFont={bodyFont} photo={data.bridePhoto} nick={coupleTitle.b} full={data.brideFull} relation="Putri dari" parents={data.brideParents} altSide />
+                  <CoupleCard palette={spal("mempelai")} hFont={hf("mempelai")} bodyFont={bodyFont} photo={data.groomPhoto} nick={coupleTitle.a} full={data.groomFull} relation="Putra dari" parents={data.groomParents} altSide={false} />
+                  <p className={`${hf("mempelai")} self-center text-center text-4xl`} style={{ color: p.accent }}>&amp;</p>
+                  <CoupleCard palette={spal("mempelai")} hFont={hf("mempelai")} bodyFont={bodyFont} photo={data.bridePhoto} nick={coupleTitle.b} full={data.brideFull} relation="Putri dari" parents={data.brideParents} altSide />
                 </div>
-                <p className={`${bodyFont} mt-10 text-center text-sm italic leading-relaxed`} style={{ color: p.textMuted }}>
+                <p className={`${bodyFont} mt-10 text-center text-sm italic leading-relaxed`} style={{ color: spal("mempelai").textMuted }}>
                   Merupakan kehormatan bagi kami apabila Anda berkenan hadir memberikan doa restu.
                 </p>
               </div>
@@ -311,9 +330,9 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
           )}
 
           {/* Acara */}
-          <section className="px-6 py-20">
+          <section data-sec="acara" className="px-6 py-20" style={zs("acara")}>
             <div className="mx-auto max-w-3xl space-y-8">
-              <SectionHeading title={isWedding ? "Rangkaian Acara" : "Waktu & Tempat"} theme={t} hFont={hFont} />
+              <SectionHeading title={isWedding ? "Rangkaian Acara" : "Waktu & Tempat"} theme={stheme("acara")} hFont={hf("acara")} />
               {data.dressCode && (
                 <p className="text-center">
                   <span className="inline-block rounded-full px-5 py-2 text-xs font-bold uppercase tracking-[0.2em]" style={{ background: `${p.accent}18`, color: p.accent }}>
@@ -325,17 +344,17 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
               {data.events.map((ev, i) => (
                 <div key={i} className="overflow-hidden rounded-3xl border" style={{ borderColor: `${p.accent}44`, background: p.surface }}>
                   <div className="px-7 pt-7 pb-4 text-center">
-                    <h3 className={`${hFont} text-2xl`} style={{ color: p.accent }}>{ev.name}</h3>
+                    <h3 className={`${hf("acara")} text-2xl`} style={{ color: p.accent }}>{ev.name}</h3>
                     {ev.date && (
-                      <p className={`${bodyFont} mt-3 text-sm`} style={{ color: p.textMuted }}>
+                      <p className={`${bodyFont} mt-3 text-sm`} style={{ color: spal("acara").textMuted }}>
                         {formatDateID(ev.date)}
                         {ev.startTime && <> · Pukul {ev.startTime}{ev.endTime ? `–${ev.endTime}` : " WIB"}</>}
                       </p>
                     )}
                   </div>
                   <div className="px-7 pb-7">
-                    {ev.place && <p className="text-center font-semibold" style={{ color: p.text }}>{ev.place}</p>}
-                    {ev.address && <p className={`${bodyFont} mt-1 text-center text-sm leading-relaxed`} style={{ color: p.textMuted }}>{ev.address}</p>}
+                    {ev.place && <p className="text-center font-semibold" style={{ color: spal("acara").text }}>{ev.place}</p>}
+                    {ev.address && <p className={`${bodyFont} mt-1 text-center text-sm leading-relaxed`} style={{ color: spal("acara").textMuted }}>{ev.address}</p>}
                     <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
                       {(ev.mapsUrl || ev.address) && (
                         <a
@@ -388,7 +407,7 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
 
               {data.streamingUrl && (
                 <div className="rounded-2xl border p-5 text-center" style={{ borderColor: `${p.accent}44`, background: p.surface }}>
-                  <p className={`${bodyFont} text-sm`} style={{ color: p.textMuted }}>Tidak bisa hadir? Ikuti secara daring:</p>
+                  <p className={`${bodyFont} text-sm`} style={{ color: spal("acara").textMuted }}>Tidak bisa hadir? Ikuti secara daring:</p>
                   <a href={data.streamingUrl} target="_blank" rel="noreferrer" className="mt-2 inline-block rounded-full border px-5 py-2.5 text-xs font-bold transition hover:opacity-70" style={{ borderColor: p.accent, color: p.accent }}>
                     ▶ Tonton Live Streaming
                   </a>
@@ -399,18 +418,18 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
 
           {/* Cerita */}
           {data.story.length > 0 && (
-            <section className="px-6 py-20" style={{ background: p.surface }}>
+            <section data-sec="cerita" className="px-6 py-20" style={{ ...zs("cerita"), background: p.surface }}>
               <div className="mx-auto max-w-2xl">
-                <SectionHeading title="Cerita Kami" theme={t} hFont={hFont} />
-                <ol className="relative mt-10 space-y-10 before:absolute before:left-[7px] before:h-full before:w-px" style={{ color: p.text }}>
+                <SectionHeading title="Cerita Kami" theme={stheme("cerita")} hFont={hf("cerita")} />
+                <ol className="relative mt-10 space-y-10 before:absolute before:left-[7px] before:h-full before:w-px" style={{ color: spal("cerita").text }}>
                   {data.story.map((s, i) => (
                     <li key={i} className="relative pl-8 before:absolute before:left-0 before:top-1.5 before:h-4 before:w-4 before:rounded-full before:border-4" style={{ ["--before-color" as string]: p.accent }}>
                       <span className="absolute left-0 top-1.5 block h-4 w-4 rounded-full border-4" style={{ borderColor: p.accent, background: p.surface }} />
                       <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: p.accent }}>
                         {s.date ? formatDateID(s.date) : ""}
                       </p>
-                      <h4 className={`${hFont} mt-1 text-xl`}>{s.title}</h4>
-                      <p className={`${bodyFont} mt-2 text-sm leading-relaxed`} style={{ color: p.textMuted }}>{s.text}</p>
+                      <h4 className={`${hf("cerita")} mt-1 text-xl`}>{s.title}</h4>
+                      <p className={`${bodyFont} mt-2 text-sm leading-relaxed`} style={{ color: spal("cerita").textMuted }}>{s.text}</p>
                     </li>
                   ))}
                 </ol>
@@ -420,9 +439,9 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
 
           {/* Galeri */}
           {(data.galleryUrls.length > 0 || data.galleryVideos.length > 0) && (
-            <section className="px-6 py-20">
+            <section data-sec="galeri" className="px-6 py-20" style={zs("galeri")}>
               <div className="mx-auto max-w-3xl">
-                <SectionHeading title="Galeri Momen" theme={t} hFont={hFont} />
+                <SectionHeading title="Galeri Momen" theme={stheme("galeri")} hFont={hf("galeri")} />
                 <GallerySection urls={data.galleryUrls} />
                 <VideoSection urls={data.galleryVideos} />
               </div>
@@ -431,10 +450,10 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
 
           {/* Amplop digital */}
           {unlocked.gift && (data.banks.some((b) => b.bank || b.number) || data.giftAddress) && (
-            <section className="px-6 py-20" style={{ background: p.surface }}>
+            <section data-sec="kado" className="px-6 py-20" style={{ ...zs("kado"), background: p.surface }}>
               <div className="mx-auto max-w-xl">
-                <SectionHeading title="Amplop Digital" theme={t} hFont={hFont} />
-                <p className={`${bodyFont} mt-4 text-center text-sm leading-relaxed`} style={{ color: p.textMuted }}>
+                <SectionHeading title="Amplop Digital" theme={stheme("kado")} hFont={hf("kado")} />
+                <p className={`${bodyFont} mt-4 text-center text-sm leading-relaxed`} style={{ color: spal("kado").textMuted }}>
                   Doa restu Anda adalah hadiah terindah. Namun jika ingin memberi tanda kasih, silakan gunakan kanal berikut.
                 </p>
                 <div className="mt-8 space-y-6">
@@ -442,7 +461,7 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
                     <BankAtmCard key={i} bank={b.bank} number={b.number} holder={b.holder} />
                   ))}
                   {data.giftAddress && (
-                    <GiftCard label="Kirim Hadiah Fisik" value={data.giftAddress} accent={p.accent} surface={p.bg} textColor={p.text} multiline />
+                    <GiftCard label="Kirim Hadiah Fisik" value={data.giftAddress} accent={spal("kado").accent} surface={p.bg} textColor={spal("kado").text} multiline />
                   )}
                 </div>
               </div>
@@ -450,28 +469,28 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
           )}
 
           {/* RSVP & ucapan */}
-          <RsvpSection slug={slug} theme={t} hFont={hFont} bodyFont={bodyFont} guestName={guestName} initialWishes={initialWishes} />
+          <RsvpSection slug={slug} theme={stheme("rsvp")} hFont={hf("rsvp")} bodyFont={bodyFont} guestName={guestName} initialWishes={initialWishes} />
 
           {/* Penutup */}
-          <section className="relative overflow-hidden px-6 py-20 text-center" style={{ background: `linear-gradient(160deg, ${t.gradient[0]}, ${t.gradient[1]})` }}>
+          <section data-sec="penutup" className="relative overflow-hidden px-6 py-20 text-center" style={{ ...zs("penutup"), background: `linear-gradient(160deg, ${t.gradient[0]}, ${t.gradient[1]})` }}>
             {decorImg("awan-bawah", undefined, cloudsStyle)}
             {decorImg("awan-kiri", "pointer-events-none absolute bottom-0 right-0 z-0 w-32 rotate-180 opacity-90 sm:w-44")}
             {decorImg("awan-kanan", "pointer-events-none absolute left-0 bottom-0 z-0 w-32 rotate-180 opacity-90 sm:w-44")}
             <div className="mx-auto max-w-md">
-              <p className={`${bodyFont} leading-relaxed`} style={{ color: p.textMuted }}>
+              <p className={`${bodyFont} leading-relaxed`} style={{ color: spal("penutup").textMuted }}>
                 {data.closingNote ||
                   "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Anda berkenan hadir untuk memberikan doa restu."}
               </p>
               {coupleTitle && (
-                <p className={`${hFont} mt-8 text-4xl`} style={{ color: p.text }}>
+                <p className={`${hf("penutup")} mt-8 text-4xl`} style={{ color: spal("penutup").text }}>
                   {coupleTitle.a} &amp; {coupleTitle.b}
                 </p>
               )}
               {!coupleTitle && mainPerson && (
-                <p className={`${hFont} mt-8 text-4xl`} style={{ color: p.text }}>{mainPerson} &amp; Keluarga</p>
+                <p className={`${hf("penutup")} mt-8 text-4xl`} style={{ color: spal("penutup").text }}>{mainPerson} &amp; Keluarga</p>
               )}
               {data.quoteText && !data.closingNote && (
-                <p className={`${bodyFont} mt-6 text-sm italic`} style={{ color: p.textMuted }}>
+                <p className={`${bodyFont} mt-6 text-sm italic`} style={{ color: spal("penutup").textMuted }}>
                   &ldquo;{data.quoteText}&rdquo; — {data.quoteSource}
                 </p>
               )}

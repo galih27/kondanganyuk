@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import type { InvitationData } from "@/lib/invitation-data";
 import { CATEGORY_LABELS } from "@/lib/invitation-data";
-import { THEMES, getTheme, type ThemeArt, type ThemePalette } from "@/lib/themes";
+import { THEMES, getTheme, HEADING_FONT_OPTIONS, SECTION_KEYS, SECTION_LABELS, type SectionKey, type SectionStyle, type ThemeArt, type ThemePalette } from "@/lib/themes";
 import { PLANS } from "@/lib/plans";
 import { EDITOR_TABS, normalizeTab, type EditorTabId } from "@/lib/editor-tabs";
 import { GuestsPanel } from "./guests-panel";
@@ -139,9 +139,19 @@ export function InvitationEditor({ initial }: { initial: EditorInvitation }) {
   const initialPalOverride: Partial<ThemePalette> | null = (() => {
     try { return initial.themePalette ? JSON.parse(initial.themePalette) : null; } catch { return null; }
   })();
+  const initialSecStyles: Partial<Record<SectionKey, SectionStyle>> = (() => {
+    try {
+      if (initial.themeArt) {
+        const a = JSON.parse(initial.themeArt) as ThemeArt;
+        return a.sectionStyles ?? {};
+      }
+    } catch { /* abaikan */ }
+    return {};
+  })();
 
   const [artSlots, setArtSlots] = useState(initialArtSlots);
   const [cloudsOpacity, setCloudsOpacity] = useState<number | null>(initialCloudsOpacity);
+  const [secStyles, setSecStyles] = useState<Partial<Record<SectionKey, SectionStyle>>>(initialSecStyles);
   const [palEnabled, setPalEnabled] = useState(!!initialPalOverride);
   const [palColors, setPalColors] = useState<ThemePalette>({
     ...getTheme(initial.themeId).palette,
@@ -163,6 +173,8 @@ export function InvitationEditor({ initial }: { initial: EditorInvitation }) {
     if (b) out.backdrop = b;
     if (f) out.frame = f;
     if (typeof cloudsOpacity === "number") out.cloudsOpacity = cloudsOpacity;
+    const secEntries = Object.entries(secStyles).filter(([, v]) => v && Object.values(v).some((x) => x !== undefined && x !== "" && x !== 100));
+    if (secEntries.length > 0) out.sectionStyles = Object.fromEntries(secEntries) as ThemeArt["sectionStyles"];
     return out;
   }
   const effectivePalette: ThemePalette = palEnabled ? palColors : baseTheme.palette;
@@ -170,6 +182,7 @@ export function InvitationEditor({ initial }: { initial: EditorInvitation }) {
     setThemeId(id);
     setArtSlots({ corners: "theme", backdrop: "theme", frame: "theme" });
     setCloudsOpacity(null);
+    setSecStyles({});
     setPalEnabled(false);
     setPalColors({ ...getTheme(id).palette });
   }
@@ -840,6 +853,91 @@ export function InvitationEditor({ initial }: { initial: EditorInvitation }) {
                   <p className="mt-3 text-xs text-stone-400">Jangan lupa klik Simpan setelah mengunggah/menghapus.</p>
                 </div>
               </>
+            )}
+
+            {tab === "huruf" && (
+              <div className="space-y-4">
+                <p className="text-sm text-stone-500">
+                  Atur gaya font judul, ukuran teks, dan warna teks untuk setiap bagian undangan. Bagian tanpa pengaturan mengikuti tema.
+                </p>
+                {SECTION_KEYS.map((k) => {
+                  const cfg: SectionStyle = secStyles[k] ?? {};
+                  const dirty = Boolean(cfg.headingFont || cfg.scale || cfg.textColor);
+                  function patch(p: Partial<SectionStyle>) {
+                    setSecStyles((s) => ({ ...s, [k]: { ...s[k], ...p } }));
+                  }
+                  function resetSec() {
+                    setSecStyles((s) => {
+                      const next = { ...s };
+                      delete next[k];
+                      return next;
+                    });
+                  }
+                  return (
+                    <div key={k} className="rounded-2xl border border-stone-200 p-5">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-semibold text-stone-800">
+                          {SECTION_LABELS[k]}
+                          {!dirty && <span className="ml-2 text-xs font-normal text-stone-400">(ikut tema)</span>}
+                        </p>
+                        {dirty && (
+                          <button type="button" onClick={resetSec} className="text-xs font-semibold text-stone-400 hover:text-red-500">
+                            Reset seksi
+                          </button>
+                        )}
+                      </div>
+                      <div className="mt-4 grid gap-4 sm:grid-cols-[1fr_auto_auto] sm:items-end">
+                        <Field label="Gaya font judul">
+                          <select
+                            value={cfg.headingFont ?? ""}
+                            onChange={(e) => patch({ headingFont: e.target.value || undefined })}
+                            className={inputCls}
+                          >
+                            {HEADING_FONT_OPTIONS.map((f) => (
+                              <option key={f.value} value={f.value}>{f.label}</option>
+                            ))}
+                          </select>
+                        </Field>
+                        <Field label="Ukuran">
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="range"
+                              min={85}
+                              max={125}
+                              step={5}
+                              value={(cfg.scale ?? 1) * 100}
+                              onChange={(e) => {
+                                const v = Number(e.target.value) / 100;
+                                patch({ scale: v === 1 ? undefined : v });
+                              }}
+                              className="w-28 accent-brand-600"
+                            />
+                            <span className="w-10 text-right text-xs tabular-nums text-stone-500">{Math.round((cfg.scale ?? 1) * 100)}%</span>
+                          </div>
+                        </Field>
+                        <Field label="Warna teks">
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="color"
+                              value={cfg.textColor ?? "#000000"}
+                              onChange={(e) => patch({ textColor: e.target.value })}
+                              className="h-10 w-12 shrink-0 cursor-pointer rounded-lg border border-stone-300 bg-white p-1"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => patch({ textColor: undefined })}
+                              disabled={!cfg.textColor}
+                              className="rounded-lg border border-stone-200 px-2.5 py-2 text-xs font-semibold text-stone-500 transition enabled:hover:border-stone-300 disabled:opacity-40"
+                            >
+                              Reset
+                            </button>
+                          </div>
+                        </Field>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             )}
 
             {tab === "tamu" && <GuestsPanel invitationId={initial.id} slug={slug} initialTemplate={initial.waTemplate} />}
