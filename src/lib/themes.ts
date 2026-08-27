@@ -48,6 +48,8 @@ export const SECTION_LABELS: Record<SectionKey, string> = {
 export const HEADING_FONT_OPTIONS: { value: string; label: string }[] = [
   { value: "", label: "Ikut tema" },
   { value: "script", label: "Script (Great Vibes)" },
+  { value: "scriptina", label: "Scriptina" },
+  { value: "magnolia", label: "Magnolia Sky" },
   { value: "classic", label: "Klasik (Cormorant)" },
   { value: "serif-elegant", label: "Serif Elegan (Playfair)" },
   { value: "playful", label: "Playful (Fredoka)" },

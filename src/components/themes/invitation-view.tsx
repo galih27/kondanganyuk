@@ -35,7 +35,7 @@ interface Props {
 }
 
 const headingFontClass = (f: string) =>
-  f === "script" ? "font-script" : f === "classic" ? "font-classic font-semibold" : f === "playful" ? "font-fun font-semibold" : f === "serif-elegant" ? "font-serif-display font-semibold" : "font-semibold tracking-tight";
+  f === "script" ? "font-script" : f === "classic" ? "font-classic font-semibold" : f === "playful" ? "font-fun font-semibold" : f === "serif-elegant" ? "font-serif-display font-semibold" : f === "scriptina" ? "font-scriptina" : f === "magnolia" ? "font-magnolia" : "font-semibold tracking-tight";
 
 function googleCalendarUrl(ev: { name: string; date: string; startTime: string; place: string; address: string }) {
   if (!ev.date) return null;

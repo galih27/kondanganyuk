@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import localFont from "next/font/local";
 import { Great_Vibes, Playfair_Display, Poppins, Cormorant_Garamond, Fredoka } from "next/font/google";
 import "./globals.css";
 
@@ -30,6 +31,20 @@ const fredoka = Fredoka({
   subsets: ["latin"],
 });
 
+const scriptina = localFont({
+  variable: "--font-scriptina",
+  src: "../assets/fonts/SCRIPTIN.ttf",
+  weight: "400",
+  display: "swap",
+});
+
+const magnoliaSky = localFont({
+  variable: "--font-magnolia",
+  src: "../assets/fonts/magnolia_sky.ttf",
+  weight: "400",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://kondanganyuk.vercel.app"),
   title: {
@@ -43,7 +58,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="id">
-      <body className={`${poppins.variable} ${playfair.variable} ${greatVibes.variable} ${cormorant.variable} ${fredoka.variable} antialiased`}>
+      <body className={`${poppins.variable} ${playfair.variable} ${greatVibes.variable} ${cormorant.variable} ${fredoka.variable} ${scriptina.variable} ${magnoliaSky.variable} antialiased`}>
         {children}
       </body>
     </html>
