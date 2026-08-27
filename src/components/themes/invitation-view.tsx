@@ -318,9 +318,19 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
               <div className="relative z-10 mx-auto max-w-2xl">
                 <SectionHeading title="Mempelai" theme={stheme("mempelai")} hFont={hf("mempelai")} />
                 <div className="mt-10 grid items-start gap-10 sm:grid-cols-[1fr_auto_1fr] sm:gap-6">
-                  <CoupleCard palette={spal("mempelai")} hFont={hf("mempelai")} bodyFont={bodyFont} photo={data.groomPhoto} nick={coupleTitle.a} full={data.groomFull} relation="Putra dari" parents={data.groomParents} altSide={false} />
-                  <p className={`${hf("mempelai")} self-center text-center text-4xl`} style={{ color: p.accent }}>&amp;</p>
-                  <CoupleCard palette={spal("mempelai")} hFont={hf("mempelai")} bodyFont={bodyFont} photo={data.bridePhoto} nick={coupleTitle.b} full={data.brideFull} relation="Putri dari" parents={data.brideParents} altSide />
+                  {data.coupleOrder === "wanita-pria" ? (
+                    <>
+                      <CoupleCard palette={spal("mempelai")} hFont={hf("mempelai")} bodyFont={bodyFont} photo={data.bridePhoto} nick={coupleTitle.b} full={data.brideFull} relation="Putri dari" parents={data.brideParents} altSide={false} />
+                      <p className={`${hf("mempelai")} self-center text-center text-4xl`} style={{ color: p.accent }}>&amp;</p>
+                      <CoupleCard palette={spal("mempelai")} hFont={hf("mempelai")} bodyFont={bodyFont} photo={data.groomPhoto} nick={coupleTitle.a} full={data.groomFull} relation="Putra dari" parents={data.groomParents} altSide />
+                    </>
+                  ) : (
+                    <>
+                      <CoupleCard palette={spal("mempelai")} hFont={hf("mempelai")} bodyFont={bodyFont} photo={data.groomPhoto} nick={coupleTitle.a} full={data.groomFull} relation="Putra dari" parents={data.groomParents} altSide={false} />
+                      <p className={`${hf("mempelai")} self-center text-center text-4xl`} style={{ color: p.accent }}>&amp;</p>
+                      <CoupleCard palette={spal("mempelai")} hFont={hf("mempelai")} bodyFont={bodyFont} photo={data.bridePhoto} nick={coupleTitle.b} full={data.brideFull} relation="Putri dari" parents={data.brideParents} altSide />
+                    </>
+                  )}
                 </div>
                 <p className={`${bodyFont} mt-10 text-center text-sm italic leading-relaxed`} style={{ color: spal("mempelai").textMuted }}>
                   Merupakan kehormatan bagi kami apabila Anda berkenan hadir memberikan doa restu.
