@@ -127,13 +127,12 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
     ? { a: data.groomName || "Mempelai", b: data.brideName || "Mempelai" }
     : null;
 
-  function coverName(a: string, full: string) {
-    if (data.coverNameType !== "initial" || !full) return a;
-    const words = full.split(/\s+/).filter((w) => /[a-zA-Z]/.test(w) && !/^\.|&$/.test(w));
-    return words.slice(0, 2).map((w) => w.replace(/[^a-zA-Z]/g, "").charAt(0).toUpperCase()).join("") || a;
+  function coverName(a: string, initial: string) {
+    if (data.coverNameType !== "initial") return a;
+    return initial || a;
   }
-  const coverA = coupleTitle ? coverName(coupleTitle.a, data.groomFull) : "";
-  const coverB = coupleTitle ? coverName(coupleTitle.b, data.brideFull) : "";
+  const coverA = coupleTitle ? coverName(coupleTitle.a, data.groomInitial.trim()) : "";
+  const coverB = coupleTitle ? coverName(coupleTitle.b, data.brideInitial.trim()) : "";
 
   const firstEventDate = data.events.find((e) => e.date)?.date ?? "";
 

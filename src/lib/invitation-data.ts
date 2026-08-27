@@ -19,10 +19,12 @@ export interface InvitationData {
   // Pernikahan
   groomName: string; // panggilan
   groomFull: string; // lengkap
+  groomInitial: string; // inisial satu huruf / teks pendek
   groomPhoto: string; // URL foto potret
   groomParents: string;
   brideName: string;
   brideFull: string;
+  brideInitial: string;
   bridePhoto: string;
   brideParents: string;
   coupleOrder: "pria-wanita" | "wanita-pria"; // urutan tampil di seksi Mempelai
@@ -62,10 +64,12 @@ export function emptyInvitationData(): InvitationData {
   return {
     groomName: "",
     groomFull: "",
+    groomInitial: "",
     groomPhoto: "",
     groomParents: "",
     brideName: "",
     brideFull: "",
+    brideInitial: "",
     bridePhoto: "",
     brideParents: "",
     coupleOrder: "pria-wanita",

@@ -44,10 +44,12 @@ async function main() {
     const weddingData = {
       groomName: "Hendra",
       groomFull: "Hendra Kusuma Wijaya, S.T.",
+      groomInitial: "H",
       groomPhoto: "https://picsum.photos/seed/groom-kondangan/600/800",
       groomParents: "Putra pertama dari Bapak Sutrisno & Ibu Sulastri",
       brideName: "Dinda",
       brideFull: "Dinda Ayu Lestari, S.Psi.",
+      brideInitial: "D",
       bridePhoto: "https://picsum.photos/seed/bride-kondangan/600/800",
       brideParents: "Putri kedua dari Bapak Joko Prasetyo & Ibu Sri Wahyuni",
       dressCode: "Batik",

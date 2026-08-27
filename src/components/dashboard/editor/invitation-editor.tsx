@@ -396,6 +396,7 @@ export function InvitationEditor({ initial }: { initial: EditorInvitation }) {
                     <div className="space-y-4 rounded-2xl bg-brand-50/50 p-5">
                       <h3 className="font-semibold text-stone-800">🤵 Mempelai Pria</h3>
                       <Field label="Nama panggilan"><input value={form.groomName} onChange={(e) => set("groomName", e.target.value)} className={inputCls} placeholder="Hendra" /></Field>
+                      <Field label="Inisial" hint="Satu huruf yang tampil di halaman pembuka bila memilih 'Inisial'."><input value={form.groomInitial} onChange={(e) => set("groomInitial", e.target.value)} className={inputCls} placeholder="H" /></Field>
                       <Field label="Nama lengkap"><input value={form.groomFull} onChange={(e) => set("groomFull", e.target.value)} className={inputCls} placeholder="Hendra Kusuma, S.T." /></Field>
                       <Field label="Putra dari"><input value={form.groomParents} onChange={(e) => set("groomParents", e.target.value)} className={inputCls} placeholder="Bpk. Sutrisno &amp; Ibu Wati" /></Field>
                       <Field label="Foto mempelai pria">
@@ -416,6 +417,7 @@ export function InvitationEditor({ initial }: { initial: EditorInvitation }) {
                     <div className="space-y-4 rounded-2xl bg-pink-50/50 p-5">
                       <h3 className="font-semibold text-stone-800">👰 Mempelai Wanita</h3>
                       <Field label="Nama panggilan"><input value={form.brideName} onChange={(e) => set("brideName", e.target.value)} className={inputCls} placeholder="Dinda" /></Field>
+                      <Field label="Inisial" hint="Satu huruf yang tampil di halaman pembuka bila memilih 'Inisial'."><input value={form.brideInitial} onChange={(e) => set("brideInitial", e.target.value)} className={inputCls} placeholder="D" /></Field>
                       <Field label="Nama lengkap"><input value={form.brideFull} onChange={(e) => set("brideFull", e.target.value)} className={inputCls} placeholder="Dinda Ayu Lestari, S.Pd." /></Field>
                       <Field label="Putri dari"><input value={form.brideParents} onChange={(e) => set("brideParents", e.target.value)} className={inputCls} placeholder="Bpk. Joko &amp; Ibu Sri" /></Field>
                       <Field label="Foto mempelai wanita">
