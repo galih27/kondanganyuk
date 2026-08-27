@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth";
 import { GuestManager } from "@/components/dashboard/guest-manager";
+import { findAccessibleInvitation } from "@/lib/invitation-access";
 
 export const dynamic = "force-dynamic";
 
@@ -10,10 +11,7 @@ export default async function TamuPage({ params }: { params: Promise<{ id: strin
   if (!user) return null;
   const { id } = await params;
 
-  const invitation = await db.invitation.findFirst({
-    where: { id, ...(user.role === "ADMIN" ? {} : { userId: user.id }) },
-    select: { slug: true, title: true },
-  });
+  const invitation = await findAccessibleInvitation(id, user);
   if (!invitation) notFound();
 
   const guests = await db.guest.findMany({

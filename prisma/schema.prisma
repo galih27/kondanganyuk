@@ -16,6 +16,7 @@ model User {
   role         String       @default("USER") // USER | ADMIN | RESELLER
   createdAt    DateTime     @default(now())
   invitations  Invitation[]
+  collaboratorOn InvitationCollaborator[]
   payments     Payment[]
   media        Media[]
 }
@@ -58,7 +59,21 @@ model Invitation {
   guests         Guest[]
   wishes         Wish[]
   payments       Payment[]
+  collaborators  InvitationCollaborator[]
 
+  @@index([userId])
+}
+
+// Kolaborator: user lain yang diberi akses mengelola undangan.
+model InvitationCollaborator {
+  id           String     @id @default(cuid())
+  invitationId String
+  invitation   Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+
+  @@unique([invitationId, userId])
   @@index([userId])
 }
 

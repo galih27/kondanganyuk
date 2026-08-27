@@ -2,6 +2,7 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { CATEGORY_LABELS } from "@/lib/invitation-data";
 import { TransferOwnerButton } from "@/components/admin/transfer-owner";
+import { ManageCollaboratorsButton } from "@/components/admin/manage-collaborators";
 
 export const dynamic = "force-dynamic";
 
@@ -159,6 +160,11 @@ export default async function AdminUndanganPage({
                       Lihat ↗
                     </a>
                   )}
+                  <ManageCollaboratorsButton
+                    invitationId={inv.id}
+                    ownerId={inv.userId}
+                    users={users}
+                  />
                   <TransferOwnerButton
                     invitationId={inv.id}
                     currentOwner={inv.userId}

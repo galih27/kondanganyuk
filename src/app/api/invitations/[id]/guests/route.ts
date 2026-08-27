@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth";
+import { findAccessibleInvitation } from "@/lib/invitation-access";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -11,15 +12,11 @@ function normalizePhone(raw: string): string {
   return d;
 }
 
-async function getOwnedInvitation(id: string, userId: string, role: string) {
-  return db.invitation.findFirst({ where: { id, ...(role === "ADMIN" ? {} : { userId }) } });
-}
-
 export async function GET(_req: Request, { params }: Params) {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ error: "Belum masuk." }, { status: 401 });
   const { id } = await params;
-  const invitation = await getOwnedInvitation(id, user.id, user.role);
+  const invitation = await findAccessibleInvitation(id, user);
   if (!invitation) return NextResponse.json({ error: "Undangan tidak ditemukan." }, { status: 404 });
   const guests = await db.guest.findMany({
     where: { invitationId: invitation.id },
@@ -33,7 +30,7 @@ export async function POST(req: Request, { params }: Params) {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ error: "Belum masuk." }, { status: 401 });
   const { id } = await params;
-  const invitation = await getOwnedInvitation(id, user.id, user.role);
+  const invitation = await findAccessibleInvitation(id, user);
   if (!invitation) return NextResponse.json({ error: "Undangan tidak ditemukan." }, { status: 404 });
 
   const body = await req.json().catch(() => null);

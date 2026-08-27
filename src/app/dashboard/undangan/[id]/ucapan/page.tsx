@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth";
 import { WishesManager } from "@/components/dashboard/wishes-manager";
+import { findAccessibleInvitation } from "@/lib/invitation-access";
 
 export const dynamic = "force-dynamic";
 
@@ -10,10 +11,7 @@ export default async function UcapanPage({ params }: { params: Promise<{ id: str
   if (!user) return null;
   const { id } = await params;
 
-  const invitation = await db.invitation.findFirst({
-    where: { id, ...(user.role === "ADMIN" ? {} : { userId: user.id }) },
-    select: { title: true },
-  });
+  const invitation = await findAccessibleInvitation(id, user);
   if (!invitation) notFound();
 
   const wishes = await db.wish.findMany({

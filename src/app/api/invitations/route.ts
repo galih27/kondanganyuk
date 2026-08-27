@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth";
 import { slugify, RESERVED_SLUGS } from "@/lib/utils";
+import { ownedOrCollaboratedWhere } from "@/lib/invitation-access";
 
 export async function POST(req: Request) {
   const user = await getSessionUser();
@@ -42,7 +43,7 @@ export async function GET() {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ error: "Belum masuk." }, { status: 401 });
   const invitations = await db.invitation.findMany({
-    where: { userId: user.id },
+    where: ownedOrCollaboratedWhere(user.id),
     orderBy: { updatedAt: "desc" },
     include: { _count: { select: { wishes: true, guests: true } } },
   });

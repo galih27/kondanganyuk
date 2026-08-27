@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth";
 import { CATEGORY_LABELS } from "@/lib/invitation-data";
 import { formatRupiah } from "@/lib/utils";
+import { ownedOrCollaboratedWhere } from "@/lib/invitation-access";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +20,7 @@ export default async function DashboardPage() {
   if (!user) return null;
 
   const invitations = await db.invitation.findMany({
-    where: { userId: user.id },
+    where: ownedOrCollaboratedWhere(user.id),
     orderBy: { updatedAt: "desc" },
     include: { _count: { select: { wishes: true, guests: true } } },
   });

@@ -11,13 +11,27 @@ function normalizePhone(raw: string): string {
   return d;
 }
 
+// Tamu hanya bisa diubah pemilik / admin / kolaborator undangan terkait.
+function guestWhere(guestId: string, user: { id: string; role: string }) {
+  return {
+    id: guestId,
+    invitation:
+      user.role === "ADMIN"
+        ? {}
+        : {
+            OR: [
+              { userId: user.id },
+              { collaborators: { some: { userId: user.id } } },
+            ],
+          },
+  };
+}
+
 export async function PATCH(req: Request, { params }: Params) {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ error: "Belum masuk." }, { status: 401 });
   const { guestId } = await params;
-  const guest = await db.guest.findFirst({
-    where: { id: guestId, invitation: user.role === "ADMIN" ? {} : { userId: user.id } },
-  });
+  const guest = await db.guest.findFirst({ where: guestWhere(guestId, user) });
   if (!guest) return NextResponse.json({ error: "Tamu tidak ditemukan." }, { status: 404 });
 
   const body = await req.json().catch(() => ({}));
@@ -41,9 +55,7 @@ export async function DELETE(_req: Request, { params }: Params) {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ error: "Belum masuk." }, { status: 401 });
   const { guestId } = await params;
-  const guest = await db.guest.findFirst({
-    where: { id: guestId, invitation: user.role === "ADMIN" ? {} : { userId: user.id } },
-  });
+  const guest = await db.guest.findFirst({ where: guestWhere(guestId, user) });
   if (!guest) return NextResponse.json({ error: "Tamu tidak ditemukan." }, { status: 404 });
   await db.guest.delete({ where: { id: guest.id } });
   return NextResponse.json({ ok: true });

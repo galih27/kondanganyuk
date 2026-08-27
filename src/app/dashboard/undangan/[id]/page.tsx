@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth";
 import { normalizeInvitationData } from "@/lib/invitation-data";
 import { InvitationEditor } from "@/components/dashboard/editor/invitation-editor";
+import { findAccessibleInvitation } from "@/lib/invitation-access";
 
 export const dynamic = "force-dynamic";
 
@@ -11,16 +12,16 @@ export default async function EditUndanganPage({ params }: { params: Promise<{ i
   if (!user) return null;
   const { id } = await params;
 
-  const invitation = await db.invitation.findFirst({
-    where: { id, ...(user.role === "ADMIN" ? {} : { userId: user.id }) },
-    include: {
-      _count: { select: { wishes: true, guests: true } },
-      payments: { orderBy: { createdAt: "desc" }, take: 1 },
-    },
-  });
+  const invitation = await findAccessibleInvitation(id, user);
   if (!invitation) notFound();
 
   const data = normalizeInvitationData(JSON.parse(invitation.data || "{}"));
+
+  const [wishCount, guestCount, lastPayment] = await Promise.all([
+    db.wish.count({ where: { invitationId: id } }),
+    db.guest.count({ where: { invitationId: id } }),
+    db.payment.findFirst({ where: { invitationId: id }, orderBy: { createdAt: "desc" } }),
+  ]);
 
   return (
     <InvitationEditor
@@ -39,10 +40,10 @@ export default async function EditUndanganPage({ params }: { params: Promise<{ i
         views: invitation.views,
         activatedUntil: invitation.activatedUntil?.toISOString() ?? null,
         data,
-        wishCount: invitation._count.wishes,
-        guestCount: invitation._count.guests,
-        lastPaymentStatus: invitation.payments[0]?.status ?? null,
-        lastOrderId: invitation.payments[0]?.orderId ?? null,
+        wishCount,
+        guestCount,
+        lastPaymentStatus: lastPayment?.status ?? null,
+        lastOrderId: lastPayment?.orderId ?? null,
       }}
     />
   );

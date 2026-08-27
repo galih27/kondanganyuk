@@ -1,22 +1,17 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth";
+import { findAccessibleInvitation } from "@/lib/invitation-access";
 
 type Params = { params: Promise<{ id: string }> };
 
 // Check-in tamu via QR / token
-const inviteWhere = (user: { id: string; role: string }, id: string) =>
-  ({ id, ...(user.role === "ADMIN" ? {} : { userId: user.id }) });
-
 export async function POST(req: Request, { params }: Params) {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ error: "Belum masuk." }, { status: 401 });
   const { id } = await params;
 
-  const invitation = await db.invitation.findFirst({
-    where: inviteWhere(user, id),
-    select: { plan: true },
-  });
+  const invitation = await findAccessibleInvitation(id, user);
   if (!invitation) return NextResponse.json({ error: "Tidak diizinkan." }, { status: 403 });
 
   const body = await req.json();
@@ -52,7 +47,7 @@ export async function GET(_req: Request, { params }: Params) {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ error: "Belum masuk." }, { status: 401 });
   const { id } = await params;
-  const invitation = await db.invitation.findFirst({ where: inviteWhere(user, id) });
+  const invitation = await findAccessibleInvitation(id, user);
   if (!invitation) return NextResponse.json({ error: "Tidak diizinkan." }, { status: 403 });
 
   const guests = await db.guest.findMany({
