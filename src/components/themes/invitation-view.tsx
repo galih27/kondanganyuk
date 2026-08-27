@@ -202,15 +202,27 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
             
 
             {coupleTitle ? (
-              <>
-                <h1 className={`${hf("pembuka")} mt-4 leading-tight ${data.coverNameType === "initial" ? "text-8xl md:text-9xl" : "text-6xl md:text-7xl"}`} style={{ color: p.text }}>
-                  {data.coupleOrder === "wanita-pria" ? coverB : coverA}
-                </h1>
-                <p className={`${hf("pembuka")} my-2 text-3xl`} style={{ color: p.accent }}>&amp;</p>
-                <h1 className={`${hf("pembuka")} leading-tight ${data.coverNameType === "initial" ? "text-8xl md:text-9xl" : "text-6xl md:text-7xl"}`} style={{ color: p.text }}>
-                  {data.coupleOrder === "wanita-pria" ? coverA : coverB}
-                </h1>
-              </>
+              data.coverNameType === "initial" ? (
+                <div className="mx-auto mt-4 flex max-w-fit flex-col items-start leading-none">
+                  <span className={`${hf("pembuka")} text-8xl md:text-9xl`} style={{ color: p.text }}>
+                    {data.coupleOrder === "wanita-pria" ? coverB : coverA}
+                  </span>
+                  <span className={`${hf("pembuka")} ml-10 -mt-3 text-3xl md:ml-16`} style={{ color: p.accent }}>&amp;</span>
+                  <span className={`${hf("pembuka")} ml-20 -mt-3 text-8xl md:ml-32 md:text-9xl`} style={{ color: p.text }}>
+                    {data.coupleOrder === "wanita-pria" ? coverA : coverB}
+                  </span>
+                </div>
+              ) : (
+                <>
+                  <h1 className={`${hf("pembuka")} mt-4 text-6xl leading-tight md:text-7xl`} style={{ color: p.text }}>
+                    {data.coupleOrder === "wanita-pria" ? coverB : coverA}
+                  </h1>
+                  <p className={`${hf("pembuka")} my-2 text-3xl`} style={{ color: p.accent }}>&amp;</p>
+                  <h1 className={`${hf("pembuka")} text-6xl leading-tight md:text-7xl`} style={{ color: p.text }}>
+                    {data.coupleOrder === "wanita-pria" ? coverA : coverB}
+                  </h1>
+                </>
+              )
             ) : (
               <h1 className={`${hFont} mt-5 text-5xl leading-tight md:text-6xl`} style={{ color: p.text }}>
                 {mainPerson || data.events[0]?.name || "Undangan"}
