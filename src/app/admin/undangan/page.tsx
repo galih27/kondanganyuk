@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { CATEGORY_LABELS } from "@/lib/invitation-data";
+import { TransferOwnerButton } from "@/components/admin/transfer-owner";
 
 export const dynamic = "force-dynamic";
 
@@ -53,6 +54,11 @@ export default async function AdminUndanganPage({
       user: { select: { name: true, email: true, role: true } },
       _count: { select: { wishes: true, guests: true } },
     },
+  });
+
+  const users = await db.user.findMany({
+    orderBy: { name: "asc" },
+    select: { id: true, name: true, email: true },
   });
 
   return (
@@ -153,6 +159,11 @@ export default async function AdminUndanganPage({
                       Lihat ↗
                     </a>
                   )}
+                  <TransferOwnerButton
+                    invitationId={inv.id}
+                    currentOwner={inv.userId}
+                    users={users}
+                  />
                   <Link
                     href={`/dashboard/undangan/${inv.id}`}
                     className="rounded-full bg-stone-200 px-4 py-2 text-xs font-semibold text-stone-900 transition hover:bg-white"
