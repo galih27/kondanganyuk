@@ -203,11 +203,11 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
 
             {coupleTitle ? (
               <>
-                <h1 className={`${hf("pembuka")} mt-4 text-6xl leading-tight md:text-7xl`} style={{ color: p.text }}>
+                <h1 className={`${hf("pembuka")} mt-4 leading-tight ${data.coverNameType === "initial" ? "text-8xl md:text-9xl" : "text-6xl md:text-7xl"}`} style={{ color: p.text }}>
                   {data.coupleOrder === "wanita-pria" ? coverB : coverA}
                 </h1>
                 <p className={`${hf("pembuka")} my-2 text-3xl`} style={{ color: p.accent }}>&amp;</p>
-                <h1 className={`${hf("pembuka")} text-6xl leading-tight md:text-7xl`} style={{ color: p.text }}>
+                <h1 className={`${hf("pembuka")} leading-tight ${data.coverNameType === "initial" ? "text-8xl md:text-9xl" : "text-6xl md:text-7xl"}`} style={{ color: p.text }}>
                   {data.coupleOrder === "wanita-pria" ? coverA : coverB}
                 </h1>
               </>
