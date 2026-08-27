@@ -203,12 +203,12 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
 
             {coupleTitle ? (
               data.coverNameType === "initial" ? (
-                <div className="mx-auto mt-4 flex max-w-fit flex-col items-start leading-none">
-                  <span className={`${hf("pembuka")} text-8xl md:text-9xl`} style={{ color: p.text }}>
+                <div className="relative mx-auto mt-6 h-56 w-full max-w-sm leading-none sm:h-72">
+                  <span className={`${hf("pembuka")} absolute left-0 top-0 text-8xl md:text-9xl`} style={{ color: p.text }}>
                     {data.coupleOrder === "wanita-pria" ? coverB : coverA}
                   </span>
-                  <span className={`${hf("pembuka")} ml-10 -mt-3 text-3xl md:ml-16`} style={{ color: p.accent }}>&amp;</span>
-                  <span className={`${hf("pembuka")} ml-20 -mt-3 text-8xl md:ml-32 md:text-9xl`} style={{ color: p.text }}>
+                  <span className={`${hf("pembuka")} absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 text-3xl`} style={{ color: p.accent }}>&amp;</span>
+                  <span className={`${hf("pembuka")} absolute right-0 bottom-0 text-8xl md:text-9xl`} style={{ color: p.text }}>
                     {data.coupleOrder === "wanita-pria" ? coverA : coverB}
                   </span>
                 </div>
