@@ -197,11 +197,11 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
             {coupleTitle ? (
               <>
                 <h1 className={`${hFont} mt-4 text-6xl leading-tight md:text-7xl`} style={{ color: p.text }}>
-                  {coupleTitle.a}
+                  {data.coupleOrder === "wanita-pria" ? coupleTitle.b : coupleTitle.a}
                 </h1>
                 <p className={`${hFont} my-2 text-3xl`} style={{ color: p.accent }}>&amp;</p>
                 <h1 className={`${hFont} text-6xl leading-tight md:text-7xl`} style={{ color: p.text }}>
-                  {coupleTitle.b}
+                  {data.coupleOrder === "wanita-pria" ? coupleTitle.a : coupleTitle.b}
                 </h1>
               </>
             ) : (
