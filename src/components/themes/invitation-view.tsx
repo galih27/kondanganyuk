@@ -203,12 +203,12 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
 
             {coupleTitle ? (
               data.coverNameType === "initial" ? (
-                <div className="relative mx-auto mt-3 h-44 w-full max-w-sm leading-none sm:h-56">
-                  <span className={`${hf("pembuka")} absolute left-0 top-0 text-7xl md:text-8xl`} style={{ color: p.text }}>
+                <div className="relative mx-auto mt-8 h-64 w-full max-w-sm leading-none sm:h-80">
+                  <span className={`${hf("pembuka")} absolute left-0 top-0 text-8xl md:text-9xl`} style={{ color: p.text }}>
                     {data.coupleOrder === "wanita-pria" ? coverB : coverA}
                   </span>
                   <span className={`${hf("pembuka")} absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 text-3xl`} style={{ color: p.accent }}>&amp;</span>
-                  <span className={`${hf("pembuka")} absolute right-0 bottom-0 text-7xl md:text-8xl`} style={{ color: p.text }}>
+                  <span className={`${hf("pembuka")} absolute right-0 bottom-0 text-8xl md:text-9xl`} style={{ color: p.text }}>
                     {data.coupleOrder === "wanita-pria" ? coverA : coverB}
                   </span>
                 </div>
@@ -240,14 +240,14 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
             )}
 
             {firstEventDate && (
-              <p className="mt-3 text-sm tracking-[0.25em]" style={{ color: p.textMuted }}>
+              <p className="mt-8 text-sm tracking-[0.25em]" style={{ color: p.textMuted }}>
                 {formatDateID(firstEventDate)}
               </p>
             )}
 
             <button
               onClick={handleOpen}
-              className="anim-ring mt-5 inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold shadow-xl transition hover:scale-[1.03] active:scale-95"
+              className="anim-ring mt-8 inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold shadow-xl transition hover:scale-[1.03] active:scale-95"
               style={{ background: p.accent, color: t.dark ? "#141210" : "#fff" }}
             >
               ✉️ Buka Undangan
