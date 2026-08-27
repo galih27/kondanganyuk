@@ -5,13 +5,16 @@ import { getSessionUser } from "@/lib/auth";
 type Params = { params: Promise<{ id: string }> };
 
 // Check-in tamu via QR / token
+const inviteWhere = (user: { id: string; role: string }, id: string) =>
+  ({ id, ...(user.role === "ADMIN" ? {} : { userId: user.id }) });
+
 export async function POST(req: Request, { params }: Params) {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ error: "Belum masuk." }, { status: 401 });
   const { id } = await params;
 
   const invitation = await db.invitation.findFirst({
-    where: { id, userId: user.id },
+    where: inviteWhere(user, id),
     select: { plan: true },
   });
   if (!invitation) return NextResponse.json({ error: "Tidak diizinkan." }, { status: 403 });
@@ -49,7 +52,7 @@ export async function GET(_req: Request, { params }: Params) {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ error: "Belum masuk." }, { status: 401 });
   const { id } = await params;
-  const invitation = await db.invitation.findFirst({ where: { id, userId: user.id } });
+  const invitation = await db.invitation.findFirst({ where: inviteWhere(user, id) });
   if (!invitation) return NextResponse.json({ error: "Tidak diizinkan." }, { status: 403 });
 
   const guests = await db.guest.findMany({

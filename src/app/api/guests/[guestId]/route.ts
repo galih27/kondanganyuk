@@ -16,7 +16,7 @@ export async function PATCH(req: Request, { params }: Params) {
   if (!user) return NextResponse.json({ error: "Belum masuk." }, { status: 401 });
   const { guestId } = await params;
   const guest = await db.guest.findFirst({
-    where: { id: guestId, invitation: { userId: user.id } },
+    where: { id: guestId, invitation: user.role === "ADMIN" ? {} : { userId: user.id } },
   });
   if (!guest) return NextResponse.json({ error: "Tamu tidak ditemukan." }, { status: 404 });
 
@@ -42,7 +42,7 @@ export async function DELETE(_req: Request, { params }: Params) {
   if (!user) return NextResponse.json({ error: "Belum masuk." }, { status: 401 });
   const { guestId } = await params;
   const guest = await db.guest.findFirst({
-    where: { id: guestId, invitation: { userId: user.id } },
+    where: { id: guestId, invitation: user.role === "ADMIN" ? {} : { userId: user.id } },
   });
   if (!guest) return NextResponse.json({ error: "Tamu tidak ditemukan." }, { status: 404 });
   await db.guest.delete({ where: { id: guest.id } });

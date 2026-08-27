@@ -11,7 +11,7 @@ export default async function CheckinPage({ params }: { params: Promise<{ id: st
   const { id } = await params;
 
   const invitation = await db.invitation.findFirst({
-    where: { id, userId: user.id },
+    where: { id, ...(user.role === "ADMIN" ? {} : { userId: user.id }) },
     select: { plan: true, title: true },
   });
   if (!invitation) notFound();

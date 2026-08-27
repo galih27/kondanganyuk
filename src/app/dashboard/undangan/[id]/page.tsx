@@ -12,7 +12,7 @@ export default async function EditUndanganPage({ params }: { params: Promise<{ i
   const { id } = await params;
 
   const invitation = await db.invitation.findFirst({
-    where: { id, userId: user.id },
+    where: { id, ...(user.role === "ADMIN" ? {} : { userId: user.id }) },
     include: {
       _count: { select: { wishes: true, guests: true } },
       payments: { orderBy: { createdAt: "desc" }, take: 1 },

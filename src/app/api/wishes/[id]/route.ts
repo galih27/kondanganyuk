@@ -14,7 +14,7 @@ export async function PATCH(req: Request, { params }: Params) {
     where: { id },
     include: { invitation: true },
   });
-  if (!wish || wish.invitation.userId !== session.id)
+  if (!wish || !session || (session.role !== "ADMIN" && wish.invitation.userId !== session.id))
     return NextResponse.json({ error: "Tidak diizinkan." }, { status: 403 });
 
   const body = await req.json();
@@ -34,7 +34,7 @@ export async function DELETE(_req: Request, { params }: Params) {
     where: { id },
     include: { invitation: true },
   });
-  if (!wish || wish.invitation.userId !== session.id)
+  if (!wish || !session || (session.role !== "ADMIN" && wish.invitation.userId !== session.id))
     return NextResponse.json({ error: "Tidak diizinkan." }, { status: 403 });
 
   await db.wish.delete({ where: { id } });

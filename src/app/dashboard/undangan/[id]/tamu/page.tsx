@@ -11,7 +11,7 @@ export default async function TamuPage({ params }: { params: Promise<{ id: strin
   const { id } = await params;
 
   const invitation = await db.invitation.findFirst({
-    where: { id, userId: user.id },
+    where: { id, ...(user.role === "ADMIN" ? {} : { userId: user.id }) },
     select: { slug: true, title: true },
   });
   if (!invitation) notFound();

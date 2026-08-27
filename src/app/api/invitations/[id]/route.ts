@@ -5,13 +5,20 @@ import { slugify, RESERVED_SLUGS } from "@/lib/utils";
 
 type Params = { params: Promise<{ id: string }> };
 
+// Admin boleh mengakses undangan milik user lain.
+async function findInvitationFor(userId: string, role: string, id: string, include?: object) {
+  return db.invitation.findFirst({
+    where: { id, ...(role === "ADMIN" ? {} : { userId }) },
+    include,
+  });
+}
+
 export async function GET(_req: Request, { params }: Params) {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ error: "Belum masuk." }, { status: 401 });
   const { id } = await params;
-  const invitation = await db.invitation.findFirst({
-    where: { id, userId: user.id },
-    include: { _count: { select: { wishes: true, guests: true } } },
+  const invitation = await findInvitationFor(user.id, user.role, id, {
+    _count: { select: { wishes: true, guests: true } },
   });
   if (!invitation) return NextResponse.json({ error: "Undangan tidak ditemukan." }, { status: 404 });
   return NextResponse.json({ invitation });
@@ -21,7 +28,7 @@ export async function PATCH(req: Request, { params }: Params) {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ error: "Belum masuk." }, { status: 401 });
   const { id } = await params;
-  const invitation = await db.invitation.findFirst({ where: { id, userId: user.id } });
+  const invitation = await findInvitationFor(user.id, user.role, id);
   if (!invitation) return NextResponse.json({ error: "Undangan tidak ditemukan." }, { status: 404 });
 
   const body = await req.json();
@@ -84,7 +91,7 @@ export async function DELETE(_req: Request, { params }: Params) {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ error: "Belum masuk." }, { status: 401 });
   const { id } = await params;
-  const invitation = await db.invitation.findFirst({ where: { id, userId: user.id } });
+  const invitation = await findInvitationFor(user.id, user.role, id);
   if (!invitation) return NextResponse.json({ error: "Undangan tidak ditemukan." }, { status: 404 });
   await db.invitation.delete({ where: { id } });
   return NextResponse.json({ ok: true });

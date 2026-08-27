@@ -11,7 +11,7 @@ export default async function UcapanPage({ params }: { params: Promise<{ id: str
   const { id } = await params;
 
   const invitation = await db.invitation.findFirst({
-    where: { id, userId: user.id },
+    where: { id, ...(user.role === "ADMIN" ? {} : { userId: user.id }) },
     select: { title: true },
   });
   if (!invitation) notFound();
