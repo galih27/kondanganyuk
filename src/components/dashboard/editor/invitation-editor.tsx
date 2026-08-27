@@ -371,6 +371,27 @@ export function InvitationEditor({ initial }: { initial: EditorInvitation }) {
                         ))}
                       </div>
                     </Field>
+                    <Field label="Nama di halaman pembuka" hint="Tulis nama panggilan atau inisial (huruf awal nama lengkap).">
+                      <div className="flex flex-wrap gap-2">
+                        {[
+                          { value: "nickname", label: "Nama panggilan" },
+                          { value: "initial", label: "Inisial" },
+                        ].map((o) => (
+                          <button
+                            key={o.value}
+                            type="button"
+                            onClick={() => set("coverNameType", o.value as "nickname" | "initial")}
+                            className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
+                              form.coverNameType === o.value
+                                ? "border-brand-500 bg-brand-50 text-brand-700 ring-2 ring-brand-100"
+                                : "border-stone-200 text-stone-600 hover:border-stone-300"
+                            }`}
+                          >
+                            {o.label}
+                          </button>
+                        ))}
+                      </div>
+                    </Field>
                     <div className="grid gap-5 sm:grid-cols-2">
                     <div className="space-y-4 rounded-2xl bg-brand-50/50 p-5">
                       <h3 className="font-semibold text-stone-800">🤵 Mempelai Pria</h3>

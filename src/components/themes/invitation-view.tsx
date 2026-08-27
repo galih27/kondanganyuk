@@ -127,6 +127,14 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
     ? { a: data.groomName || "Mempelai", b: data.brideName || "Mempelai" }
     : null;
 
+  function coverName(a: string, full: string) {
+    if (data.coverNameType !== "initial" || !full) return a;
+    const words = full.split(/\s+/).filter((w) => /[a-zA-Z]/.test(w) && !/^\.|&$/.test(w));
+    return words.slice(0, 2).map((w) => w.replace(/[^a-zA-Z]/g, "").charAt(0).toUpperCase()).join("") || a;
+  }
+  const coverA = coupleTitle ? coverName(coupleTitle.a, data.groomFull) : "";
+  const coverB = coupleTitle ? coverName(coupleTitle.b, data.brideFull) : "";
+
   const firstEventDate = data.events.find((e) => e.date)?.date ?? "";
 
   const decorImg = (match: string, cls?: string, style?: React.CSSProperties) => {
@@ -197,11 +205,11 @@ export function InvitationView({ slug, category, themeId, data, guestName, initi
             {coupleTitle ? (
               <>
                 <h1 className={`${hf("pembuka")} mt-4 text-6xl leading-tight md:text-7xl`} style={{ color: p.text }}>
-                  {data.coupleOrder === "wanita-pria" ? coupleTitle.b : coupleTitle.a}
+                  {data.coupleOrder === "wanita-pria" ? coverB : coverA}
                 </h1>
                 <p className={`${hf("pembuka")} my-2 text-3xl`} style={{ color: p.accent }}>&amp;</p>
                 <h1 className={`${hf("pembuka")} text-6xl leading-tight md:text-7xl`} style={{ color: p.text }}>
-                  {data.coupleOrder === "wanita-pria" ? coupleTitle.a : coupleTitle.b}
+                  {data.coupleOrder === "wanita-pria" ? coverA : coverB}
                 </h1>
               </>
             ) : (

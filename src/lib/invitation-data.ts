@@ -26,6 +26,7 @@ export interface InvitationData {
   bridePhoto: string;
   brideParents: string;
   coupleOrder: "pria-wanita" | "wanita-pria"; // urutan tampil di seksi Mempelai
+  coverNameType: "nickname" | "initial"; // nama panggilan atau inisial di halaman pembuka
   dressCode: string; // cth: Batik, Bebas rapi
 
   // Kategori non-wedding (khitan/aqiqah/ulang tahun/event)
@@ -68,6 +69,7 @@ export function emptyInvitationData(): InvitationData {
     bridePhoto: "",
     brideParents: "",
     coupleOrder: "pria-wanita",
+    coverNameType: "nickname",
     dressCode: "",
     personName: "",
     personDetail: "",
@@ -124,5 +126,7 @@ export function normalizeInvitationData(raw: unknown): InvitationData {
   }
   // Data lama: nilai coupleOrder yang tidak valid dikembalikan ke bawaan
   if (obj["coupleOrder"] !== "wanita-pria") merged["coupleOrder"] = "pria-wanita";
+  // Data lama: nilai coverNameType yang tidak valid dikembalikan ke bawaan
+  if (obj["coverNameType"] !== "initial") merged["coverNameType"] = "nickname";
   return merged as unknown as InvitationData;
 }
